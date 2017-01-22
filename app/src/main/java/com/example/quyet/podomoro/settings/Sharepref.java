@@ -11,20 +11,16 @@ import com.google.gson.Gson;
 
 public class Sharepref {
     private static final String SHARED_PREFS_NAME = "SP";
-    private static final String LOGIN_KEY = "LOGIN";
-    private static final String SETTING_KEY = "SETTING";
+    private static final String LOGIN_KEY = "login";
     private SharedPreferences sharedPreferences;
-    Gson gson;
+    Gson gson ;
     private static Sharepref instance;
-
     public static Sharepref getInstance() {
         return instance;
     }
-
-    public static void init(Context context) {
-        instance = new Sharepref(context);
+    public static  void init(Context context){
+        instance  = new Sharepref(context);
     }
-
     private Sharepref(Context context) {
         this.sharedPreferences = context.getSharedPreferences(
                 SHARED_PREFS_NAME,
@@ -32,37 +28,20 @@ public class Sharepref {
         );
         gson = new Gson();
     }
-
-    public void putLoginCredential(LoginCredentials loginCredentials) {
+    public void put(LoginCredentials loginCredentials){
 
         String loginJson = gson.toJson(loginCredentials);
         sharedPreferences.edit().putString(LOGIN_KEY, loginJson).commit();
     }
-
-    public LoginCredentials getLoginCredentials() {
+    public LoginCredentials getLoginCredentials(){
         String loginJson = sharedPreferences.getString(LOGIN_KEY, null);
-        if (loginJson == null) {
+        if (loginJson == null)
+        {
             return null;
         }
-        LoginCredentials loginCredentials = gson.fromJson(loginJson, LoginCredentials.class);
+        LoginCredentials loginCredentials  = gson.fromJson(loginJson, LoginCredentials.class);
 
-        return loginCredentials;
-    }
-
-    public void putSetting(Setting setting) {
-
-        String loginJson = gson.toJson(setting);
-        sharedPreferences.edit().putString(SETTING_KEY, loginJson).commit();
-    }
-
-    public Setting getSetting() {
-        String settingJson = sharedPreferences.getString(SETTING_KEY, null);
-        if (settingJson == null) {
-            return null;
-        }
-        Setting setting = gson.fromJson(settingJson, Setting.class);
-
-        return setting;
+        return  loginCredentials;
     }
 
 

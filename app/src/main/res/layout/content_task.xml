@@ -13,5 +13,4 @@
     tools:context="com.example.quyet.podomoro.activities.TaskActivity"
     tools:showIn="@layout/app_bar_task">
 
-
 </RelativeLayout>
