@@ -8,10 +8,15 @@ public class LoginCredentials {
 
     private String username;
     private String password;
-
-    public LoginCredentials(String password, String username) {
+    private String token;
+    public LoginCredentials(String password, String username, String token) {
         this.password = password;
         this.username = username;
+        this.token  = token;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     public String getUsername() {

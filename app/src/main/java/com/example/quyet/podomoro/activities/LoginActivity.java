@@ -18,7 +18,7 @@ import com.example.quyet.podomoro.networks.jsonmodel.RegisterResponseJson;
 import com.example.quyet.podomoro.networks.services.LoginService;
 import com.example.quyet.podomoro.networks.services.RegisterService;
 import com.example.quyet.podomoro.settings.LoginCredentials;
-import com.example.quyet.podomoro.settings.Sharepref;
+import com.example.quyet.podomoro.settings.SharedPrefs;
 import com.google.gson.Gson;
 
 import okhttp3.MediaType;
@@ -37,15 +37,22 @@ public class LoginActivity extends AppCompatActivity {
     private Button btLogin;
     private Button btRegister;
     private Retrofit retrofit;
+    private String username;
+    private String password;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        etUsername = (EditText) this.findViewById(R.id.et_username); 
-        etPassword = (EditText) this.findViewById(R.id.et_password);
-        btLogin = (Button) this.findViewById(R.id.bt_login);
-        btRegister = (Button) this.findViewById(R.id.bt_register);
+
+        getReference();
+        addListener();
+        SharedPrefs.init(this);
+
+    }
+
+    private void addListener() {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,56 +65,83 @@ public class LoginActivity extends AppCompatActivity {
                 registerAction();
             }
         });
-
-        Sharepref.init(this);
-//        skipLoginIfPosible();
-        Sharepref.getInstance().put(new LoginCredentials("hieu", "xxx"));
-        Log.d(TAG, String.format("onCreate: %s", Sharepref.getInstance().getLoginCredentials().toString()));
-// retrofit
-
     }
-    private void onLoginSuccess(){
-        gotoTaskActivity();
+    // get Reference
+    private void getReference() {
+        etUsername = (EditText) this.findViewById(R.id.et_username);
+        etPassword = (EditText) this.findViewById(R.id.et_password);
+        btLogin = (Button) this.findViewById(R.id.bt_login);
+        btRegister = (Button) this.findViewById(R.id.bt_register);
     }
-    private void sendRegister(String username, String password){
+
+    /**
+     *
+     * @param username
+     * @param password
+     */
+    private void sendRegister(String username, String password) {
+        // create retrofit
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://a-task.herokuapp.com/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+        // create service
         RegisterService registerService = retrofit.create(RegisterService.class);
+
         MediaType jsonType = MediaType.parse("application/json");
-        String registerJson = (new Gson().toJson(new RegisterBodyJson(username,password)));
-        final RequestBody registerBody = RequestBody.create(jsonType,registerJson);
-        registerService.register(registerBody).enqueue(new Callback<RegisterResponseJson>() {
+
+        String registerJson = (new Gson().toJson(new RegisterBodyJson(username, password)));
+
+        final RequestBody registerBody = RequestBody.create(jsonType, registerJson);
+        // Create Call
+        Call<RegisterResponseJson> regisCall =registerService.register(registerBody);
+
+        regisCall.enqueue(new Callback<RegisterResponseJson>() {
             @Override
             public void onResponse(Call<RegisterResponseJson> call, Response<RegisterResponseJson> response) {
-             RegisterResponseJson rrj = response.body();
-                Toast.makeText(LoginActivity.this , String.format("onResponse code : %s, message : %s",
-                        response.code(), response.message()), Toast.LENGTH_LONG).show();
-                if (response.code() == 200){
-                    Log.d(TAG, String.format(String.format("onResponse,  register success code %s", response.code()) ));
 
-                }if (response.code() == 400){
+//                Toast.makeText(LoginActivity.this, String.format("onResponse code : %s, message : %s",
+//                        response.code(), response.message()), Toast.LENGTH_LONG).show();
+                RegisterResponseJson registerResponseJson = response.body();
+                if (response.code() == 200) {
+                    Toast.makeText(LoginActivity.this, "Registed", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, String.format(String.format("onResponse,  register success " +
+                            "\n token %s", registerResponseJson.getAccessToken())));
+
+                }
+                if (response.code() == 400) {
                     Log.d(TAG, String.format(String.format("onResponse,  register fail, username " +
                             "already used , code %s", response.code())));
+                    Toast.makeText(LoginActivity.this, "register fail, username " +
+                            "                            already used ", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<RegisterResponseJson> call, Throwable t) {
-                Toast.makeText(LoginActivity.this , String.format("onFailure cause : %s, message : %s",
+                Toast.makeText(LoginActivity.this, String.format("onFailure cause : %s, message : %s",
                         t.getCause(), t.getMessage()), Toast.LENGTH_LONG).show();
                 Log.d(TAG, String.format(String.format("onFailure,  register fail " +
                         "message : %s ", t.getMessage())));
             }
         });
     }
-    private void sendLogin(String username, String password)
-    {
+    private void onLoginSuccess() {
+        // put login
+        SharedPrefs.getInstance().put(new LoginCredentials(username, password, token));
+        //
+        Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
+        //
+        gotoTaskActivity();
+    }
+
+
+    private void sendLogin(String username, String password) {
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://a-task.herokuapp.com/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+        // create service
         LoginService loginService = retrofit.create(LoginService.class);
         //data & format
         //format --> mediatype
@@ -115,21 +149,24 @@ public class LoginActivity extends AppCompatActivity {
 
         MediaType jsonType = MediaType.parse("application/json");
         String loginJson = (new Gson().toJson(new LoginBodyJson(username, password)));
-        final RequestBody loginBody= RequestBody.create(jsonType, loginJson);
-        loginService.login(loginBody).enqueue(new Callback<LoginResponseJson>() {
+        final RequestBody loginBody = RequestBody.create(jsonType, loginJson);
+        // create call
+        Call<LoginResponseJson> loginCall = loginService.login(loginBody);
+
+
+
+        loginCall.enqueue(new Callback<LoginResponseJson>() {
             @Override
             public void onResponse(Call<LoginResponseJson> call, Response<LoginResponseJson> response) {
                 LoginResponseJson loginResponseJson = response.body();
-                Toast.makeText(LoginActivity.this , String.format("onResponse code : %s, message : %s",
-                        response.code(), loginResponseJson.getMessage()), Toast.LENGTH_SHORT).show();
-                if(loginResponseJson != null){
-                    Log.d(TAG, String.format("onResponse, oh yeah: %s", loginResponseJson));
+                if (loginResponseJson != null) {
                     if (response.code() == 200) {
+                        token = loginResponseJson.getAccessToken();
                         onLoginSuccess();
                     }
-
-                }else{
+                } else {
                     Log.d(TAG, "onResponse: Could not parse body");
+                    Toast.makeText(LoginActivity.this, "Username or password wrong ! ", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -141,54 +178,42 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
-
+    /**
+     *
+     */
     private void skipLoginIfPosible() {
-        if (Sharepref.getInstance().getLoginCredentials() != null){
+        if (SharedPrefs.getInstance().getLoginCredentials().getToken() != null) {
             gotoTaskActivity();
         }
-
-
     }
 
     private void registerAction() {
 
-        String username = etUsername.getText().toString();
-        String password = etPassword.getText().toString();
+        username = etUsername.getText().toString();
+        password = etPassword.getText().toString();
 
 
-        if (username.equals("admin"))   {
-            Toast.makeText(this, "username already exist, chosse other !", Toast.LENGTH_SHORT).show();
-        }
-        else if(username.equals("") || username == null){
+        if (username.equals("") || username == null) {
             Toast.makeText(this, "username cannot be null", Toast.LENGTH_SHORT).show();
-        }else if(password.equals("") || password == null)
-        {
+        } else if (password.equals("") || password == null) {
             Toast.makeText(this, "enter password", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             sendRegister(username, password);
         }
-
 
 
     }
 
     private void attemptLogin() {
-        String username = etUsername.getText().toString();
-        String password = etPassword.getText().toString();
-//        if (username.equals("admin") && password.equals("admin")) {
-            //notification
+        username = etUsername.getText().toString();
+        password = etPassword.getText().toString();
         sendLogin(username, password);
 
-
-//        } else {
-//            Toast.makeText(this, "Wrong Username or password", Toast.LENGTH_SHORT).show();
-//        }
-
     }
-    private void gotoTaskActivity(){
+
+    private void gotoTaskActivity() {
         Toast.makeText(this, "logged in", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this,TaskActivity.class);
+        Intent intent = new Intent(this, TaskActivity.class);
         startActivity(intent);
     }
 }
