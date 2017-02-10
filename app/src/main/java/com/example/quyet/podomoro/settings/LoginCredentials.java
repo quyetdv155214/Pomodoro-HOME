@@ -8,15 +8,25 @@ public class LoginCredentials {
 
     private String username;
     private String password;
-    private String token;
-    public LoginCredentials(String password, String username, String token) {
-        this.password = password;
+    private String accessToken;
+
+    public LoginCredentials(String username, String password, String accessToken) {
         this.username = username;
-        this.token  = token;
+        this.password = password;
+        this.accessToken = accessToken;
     }
 
-    public String getToken() {
-        return token;
+//    public LoginCredentials(String password, String username) {
+//        this.password = password;
+//        this.username = username;
+//    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public String getUsername() {
@@ -30,8 +40,9 @@ public class LoginCredentials {
     @Override
     public String toString() {
         return "LoginCredentials{" +
-                "username='" + username + '\'' +
+                "accessToken='" + accessToken + '\'' +
                 ", password='" + password + '\'' +
+                ", username='" + username + '\'' +
                 '}';
     }
 }
