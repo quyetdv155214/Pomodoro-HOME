@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.quyet.podomoro.R;
+import com.example.quyet.podomoro.adapters.ColorTableAdapter;
 import com.example.quyet.podomoro.networks.jsonmodel.LoginBodyJson;
 import com.example.quyet.podomoro.networks.jsonmodel.LoginResponseJson;
 import com.example.quyet.podomoro.networks.jsonmodel.RegisterBodyJson;
@@ -56,7 +57,6 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.textInputUsername)
     TextInputLayout textInputUsername;
     @BindView(R.id.textInputPassword)
-
     TextInputLayout textInputPassword;
     @BindView(R.id.iv_techkid)
     ImageView iv_techkid;
@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
     private String username;
     private String password;
     private String token;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -294,11 +295,9 @@ public class LoginActivity extends AppCompatActivity {
             textInputPassword.setError(Cons.PASS_TOO_SHORT_ERROR);
             return false;
         }
-
         return true;
 
     }
-
     private boolean checkUsername() {
         // check general username
         if (username.isEmpty()) {

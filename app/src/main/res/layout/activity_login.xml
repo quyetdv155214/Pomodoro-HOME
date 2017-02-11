@@ -7,7 +7,7 @@
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:padding="16dp"
     tools:context="com.example.quyet.podomoro.activities.LoginActivity">
 
@@ -43,43 +43,44 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </android.support.design.widget.TextInputLayout>
-    <View
-        android:id="@+id/tempView"
-        android:layout_width="40dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/textInputPassword"
-        android:layout_height="0dp"/>
 
-    <Button
-        android:layout_below="@id/textInputPassword"
-        android:id="@+id/bt_register"
-        android:text="@string/register"
-        android:textSize="14sp"
-        android:layout_toLeftOf="@id/tempView"
-        android:layout_marginTop="@dimen/bt_margin_top"
-        android:layout_marginBottom="@dimen/bt_margin_bottom"
-        android:layout_marginLeft="@dimen/bt_margin_left"
-        android:layout_marginRight="@dimen/bt_margin_left"
-        android:background="@color/colorTransparent"
-        android:textColor="@color/colorAccent"
-        android:layout_width="@dimen/btWidth"
-        android:layout_height="@dimen/btHeight" />
-    <Button
+        <LinearLayout
+            android:layout_below="@id/textInputPassword"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-        android:id="@+id/bt_login"
-        android:text="@string/login"
-        android:textSize="14sp"
-        android:layout_toRightOf="@id/tempView"
-        android:layout_below="@id/textInputPassword"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/bt_margin_top"
-        android:layout_marginBottom="@dimen/bt_margin_bottom"
-        android:textColor="@color/colorWhite"
-        android:layout_marginLeft="@dimen/bt_margin_left"
-        android:layout_marginRight="@dimen/bt_margin_left"
-        android:background="@drawable/shape_button"
-        android:layout_width="@dimen/btWidth"
-        android:layout_height="@dimen/btHeight" />
+            <Button
+
+
+                android:id="@+id/bt_register"
+                android:text="@string/register"
+                android:textSize="14sp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="@dimen/bt_margin_top"
+                android:layout_marginLeft="@dimen/bt_margin_left"
+                android:layout_marginRight="@dimen/bt_margin_left"
+                android:background="@color/colorTransparent"
+                android:textColor="@color/colorAccent"
+                android:layout_width="@dimen/btWidth"
+                android:layout_height="@dimen/btHeight" />
+
+            <Button
+
+                android:id="@+id/bt_login"
+                android:text="@string/login"
+                android:textSize="14sp"
+                android:gravity="center" android:textColor="@color/colorWhite"
+                android:layout_marginTop="@dimen/bt_margin_top"
+                android:layout_marginEnd="@dimen/margin_start"
+                android:layout_marginStart="@dimen/margin_end"
+                android:layout_marginLeft="@dimen/bt_margin_left"
+                android:layout_marginRight="@dimen/bt_margin_left"
+                android:background="@drawable/shape_button"
+                android:layout_width="@dimen/btWidth"
+                android:layout_height="@dimen/btHeight" />
+        </LinearLayout>
     <ImageView
         android:id="@+id/iv_techkid"
         app:srcCompat="@drawable/ic_techkidslogo"
