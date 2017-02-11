@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -15,14 +17,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-
 import com.example.quyet.podomoro.R;
 import com.example.quyet.podomoro.adapters.TaskAdapter;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class TaskActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private static final String TAG = TaskActivity.class.toString() ;
+
+
+    @BindView(R.id.rv_task)
+    RecyclerView rvTask;
     private TaskAdapter taskAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,25 +56,15 @@ public class TaskActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        setupUI();
+        searchUI();
     }
 
-    private void setupUI() {
-
-    }
-
-    private void gotoSettingActivity(){
-        try {
-
-            Intent intent = new Intent(this,SettingActivity.class);
-            this.startActivity(intent);
-            Log.d(TAG, "onClick: go to seting");
-
-        }catch (Exception e){
-            Log.d(TAG, e.getMessage());
-
-        }
-
+    private void searchUI() {
+        //
+        ButterKnife.bind(this);
+        taskAdapter = new TaskAdapter();
+        rvTask.setAdapter(taskAdapter);
+        rvTask.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
@@ -117,7 +113,6 @@ public class TaskActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-            gotoSettingActivity();
 
         } else if (id == R.id.nav_share) {
 
@@ -125,11 +120,22 @@ public class TaskActivity extends AppCompatActivity
 
         }
 
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    
+
+    private void gotoSettingActivity(){
+        try {
+
+            Intent intent = new Intent(this,SettingActivity.class);
+            this.startActivity(intent);
+
+
+        }catch (Exception e){
+
+
+        }
+
+    }
 }
