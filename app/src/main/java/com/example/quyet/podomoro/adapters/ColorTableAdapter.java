@@ -20,7 +20,7 @@ public class ColorTableAdapter extends RecyclerView.Adapter<ColorTableViewHolder
     public ColorTableViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater  = LayoutInflater.from(parent.getContext());
         View itemView  = layoutInflater.inflate(
-                R.layout.color_choose,
+                R.layout.item_color,
                 parent,
                 false
         );

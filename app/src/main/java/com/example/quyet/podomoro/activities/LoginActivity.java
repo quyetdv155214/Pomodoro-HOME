@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.quyet.podomoro.R;
-import com.example.quyet.podomoro.adapters.ColorTableAdapter;
 import com.example.quyet.podomoro.networks.jsonmodel.LoginBodyJson;
 import com.example.quyet.podomoro.networks.jsonmodel.LoginResponseJson;
 import com.example.quyet.podomoro.networks.jsonmodel.RegisterBodyJson;
@@ -71,12 +70,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-
         addListener();
         setupUI();
         SharedPrefs.init(this);
         etUsername.requestFocus();
-        
+
+        skipLoginIfPossible();
+//
 
     }
 
@@ -205,7 +205,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void sendLogin(String username, String password) {
+    private void sendLogin(final String username, final String password) {
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://a-task.herokuapp.com/api/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -232,6 +232,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResponseJson != null) {
                     if (response.code() == 200) {
                         token = loginResponseJson.getAccessToken();
+                        SharedPrefs.getInstance().put(new LoginCredentials(username,password, token));
                         Toast.makeText(LoginActivity.this,Cons.LOGIN_SUCCESS_MESS, Toast.LENGTH_SHORT).show();
 
                         onLoginSuccess();
@@ -254,7 +255,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      *
      */
-    private void skipLoginIfPosible() {
+    private void skipLoginIfPossible() {
         if (SharedPrefs.getInstance().getLoginCredentials().getAccessToken() != null) {
             gotoTaskActivity();
         }
