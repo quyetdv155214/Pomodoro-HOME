@@ -3,8 +3,6 @@ package com.example.quyet.podomoro.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,7 +16,8 @@ import android.widget.Toast;
 
 import com.example.quyet.podomoro.R;
 import com.example.quyet.podomoro.activities.TaskActivity;
-import com.example.quyet.podomoro.adapters.ColorTableAdapter;
+import com.example.quyet.podomoro.adapters.TaskColorAdapter;
+import com.example.quyet.podomoro.decoration.TaskColorDecor;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +29,8 @@ public class TaskDetailFragment extends Fragment implements FragmentListener{
 
     @BindView(R.id.rv_colors)
     RecyclerView rv_colors;
+
+
     @BindView(R.id.et_payment)
     EditText payment;
     public TaskDetailFragment() {
@@ -50,24 +51,32 @@ public class TaskDetailFragment extends Fragment implements FragmentListener{
 
     private void setupUI(View view) {
         ButterKnife.bind(this,view);
-        ColorTableAdapter colorAdapter = new ColorTableAdapter();
-        rv_colors.setAdapter(colorAdapter);
+
+        //set layout managet
         rv_colors.setLayoutManager(new GridLayoutManager(this.getContext(),4));
-        payment.setText("0.0");
+        // setAdapter
+        TaskColorAdapter colorAdapter = new TaskColorAdapter();
+        rv_colors.setAdapter(colorAdapter);
+        // add decoration
+        rv_colors.addItemDecoration(new TaskColorDecor());
+        //
+
+        // set title
+        if(getActivity() instanceof  TaskActivity){
+           ((TaskActivity) getActivity()).getSupportActionBar().setTitle(R.string.add_new_task);
+        }
+
+    }
+    private  void addListener(){
         payment.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if (payment.getText().equals("0.0")){
-                    payment.setText("");
-                }
-                if (payment.getText() == null || payment.getText().equals("")){
-
-                    payment.setText("0.0");
+                if (payment.getText() == null){
+                    payment.setText("0");
                 }
             }
         });
-        AppCompatActivity activity =  (AppCompatActivity) getActivity();
-        activity.getSupportActionBar().setTitle("Create new task");
+
     }
 
     @Override
