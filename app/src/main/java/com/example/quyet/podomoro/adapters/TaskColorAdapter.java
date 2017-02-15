@@ -10,6 +10,7 @@ import com.example.quyet.podomoro.R;
 import com.example.quyet.podomoro.adapters.viewHolders.ColorTableViewHolder;
 import com.example.quyet.podomoro.databases.DBContext;
 import com.example.quyet.podomoro.databases.models.Color;
+import com.example.quyet.podomoro.databases.models.Task;
 
 import static android.content.ContentValues.TAG;
 
@@ -64,5 +65,20 @@ public class TaskColorAdapter extends RecyclerView.Adapter<ColorTableViewHolder>
     public int getItemCount() {
 
         return DBContext.instance.allColor().size();
+    }
+    public void setSelectedColor(String color)
+    {
+        selectedPosition = 0;
+        for (int colorIndex =0; colorIndex <Color.COLORS.length; colorIndex++)
+        {
+            if (Color.COLORS[colorIndex].equalsIgnoreCase(color)){
+                selectedPosition = colorIndex;
+                break;
+            }
+        }
+        notifyDataSetChanged();
+    }
+    public String getSelectedColor(){
+        return Color.COLORS[selectedPosition];
     }
 }
