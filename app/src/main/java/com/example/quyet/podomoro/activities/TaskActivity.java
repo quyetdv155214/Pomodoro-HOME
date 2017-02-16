@@ -1,7 +1,6 @@
 package com.example.quyet.podomoro.activities;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -17,15 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.quyet.podomoro.R;
-import com.example.quyet.podomoro.fragment.FragmentListener;
-import com.example.quyet.podomoro.fragment.ManagerFragment;
 import com.example.quyet.podomoro.fragment.TaskFragment;
 
-import butterknife.BindDrawable;
 import butterknife.ButterKnife;
 
 public class TaskActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener , FragmentListener{
+        implements NavigationView.OnNavigationItemSelectedListener{
 
     private static final String TAG = "task activity";
     ActionBarDrawerToggle toggle;
@@ -79,7 +75,7 @@ public class TaskActivity extends AppCompatActivity
             }
         });
         TaskFragment taskFragment = new TaskFragment();
-        replaceFragment(taskFragment, false);
+
 
     }
 
@@ -179,8 +175,5 @@ public class TaskActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void replaceFragment(Fragment fragment, boolean addToBackStack) {
-        new ManagerFragment(getSupportFragmentManager(),R.id.fl_main).replaceFragment(fragment,addToBackStack);
-    }
+
 }

@@ -22,9 +22,7 @@ import butterknife.OnClick;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TaskFragment extends Fragment implements FragmentListener {
-
-
+public class TaskFragment extends Fragment {
     private static final String TAG = "Task fragment";
     @BindView(R.id.rv_task)
     RecyclerView rvTask;
@@ -43,11 +41,7 @@ public class TaskFragment extends Fragment implements FragmentListener {
         setupUI(view);
         ButterKnife.bind(this,view);
         return  view;
-
-
     }
-
-
     private void setupUI(View view) {
         //
 
@@ -65,7 +59,7 @@ public class TaskFragment extends Fragment implements FragmentListener {
             public void onItemClick(Task task) {
                 Log.d(TAG, String.format("onItemClick: %s", task));
                 TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
-                replaceFragment(taskDetailFragment, true);
+                // replace fragment
                 // // TODO: 2/11/2017
                 taskDetailFragment.setTitle("Edit");
                 taskDetailFragment.setTask(task);
@@ -75,13 +69,10 @@ public class TaskFragment extends Fragment implements FragmentListener {
     @OnClick(R.id.fab)
     void onFabClick(){
         TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
-        replaceFragment(taskDetailFragment, true);
+        // replace fragment
+
         // // TODO: 2/11/2017
         taskDetailFragment.setTitle("add new Task");
     }
-    @Override
-    public void replaceFragment(Fragment fragment, boolean addToBackStack) {
-        ManagerFragment mf  = new ManagerFragment(this.getActivity().getSupportFragmentManager(), R.id.fl_main);
-        mf.replaceFragment(fragment, true);
-    }
+
 }

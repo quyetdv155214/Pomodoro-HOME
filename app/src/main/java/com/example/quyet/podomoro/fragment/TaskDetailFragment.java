@@ -27,7 +27,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TaskDetailFragment extends Fragment implements FragmentListener{
+public class TaskDetailFragment extends Fragment {
 
     @BindView(R.id.rv_colors)
     RecyclerView rv_colors;
@@ -121,18 +121,13 @@ public class TaskDetailFragment extends Fragment implements FragmentListener{
                 // 3 : add to database
                 DBContext.instance.addTask(newTask);
             }
-
         }
         getActivity().onBackPressed();
+
         return false;
     }
 
-    @Override
-    public void replaceFragment(Fragment fragment, boolean addToBackStack) {
-            new ManagerFragment(this.getActivity().getSupportFragmentManager(),R.id.fl_main)
-                    .replaceFragment(fragment,addToBackStack);
 
-    }
 
 
 }
