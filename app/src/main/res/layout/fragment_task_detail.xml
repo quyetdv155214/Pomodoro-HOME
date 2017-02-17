@@ -40,17 +40,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </android.support.design.widget.TextInputLayout>
+        <Switch
+            android:id="@+id/sw_isDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/switch_margin"
+            android:layout_marginRight="@dimen/switch_margin"
+            android:layout_marginTop="16dp"
+            android:layout_below="@+id/til_payment"
+            android:layout_alignEnd="@+id/til_payment" />
+        <TextView
+            android:text="@string/done"
+            android:layout_toStartOf="@id/sw_isDone"
+            android:layout_margin="@dimen/tv_margin"
+            android:layout_alignBaseline="@id/sw_isDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <android.support.v7.widget.RecyclerView
-            android:layout_below="@id/til_payment"
+            android:background="@drawable/border_rec"
+            android:layout_below="@id/sw_isDone"
+            android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginLeft="16dp"
             android:layout_centerHorizontal="true"
             android:id="@+id/rv_colors"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             >
         </android.support.v7.widget.RecyclerView>
+
+
+
     </RelativeLayout>
 
 </FrameLayout>
