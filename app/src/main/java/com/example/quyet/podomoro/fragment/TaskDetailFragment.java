@@ -86,7 +86,7 @@ public class TaskDetailFragment extends Fragment {
 
         // set title
         if(getActivity() instanceof  TaskActivity){
-           ((TaskActivity) getActivity()).getSupportActionBar().setTitle(title);
+            ((TaskActivity) getActivity()).getSupportActionBar().setTitle(title);
         }
 
         if (task != null){

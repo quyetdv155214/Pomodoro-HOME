@@ -69,7 +69,7 @@ public class TaskFragment extends Fragment {
         taskAdapter.setTaskItemClickListener(new TaskAdapter.TaskItemClickListener() {
             @Override
             public void onItemClick(Task task) {
-                Log.d(TAG, String.format("onItemClick: %s", task));
+//                Log.d(TAG, String.format("onItemClick: %s", task));
                 TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
                 taskDetailFragment.setTitle("Edit");
                 taskDetailFragment.setTask(task);
@@ -77,6 +77,15 @@ public class TaskFragment extends Fragment {
                 taskFragmentListener.onChangeFragment(taskDetailFragment,true);
             }
         });
+        taskAdapter.setTaskTimerClickListener(new TaskAdapter.TaskTimerClickListener() {
+            @Override
+            public void onTimerClick(Task t) {
+                TimerFragment timerFragment = new TimerFragment();
+                timerFragment.setTitle(t.getName());
+                taskFragmentListener.onChangeFragment(timerFragment, true);
+            }
+        });
+
     }
 
     @OnClick(R.id.fab)
