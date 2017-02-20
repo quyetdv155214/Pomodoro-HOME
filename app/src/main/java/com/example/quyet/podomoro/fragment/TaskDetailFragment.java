@@ -1,8 +1,8 @@
 package com.example.quyet.podomoro.fragment;
 
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
  */
 public class TaskDetailFragment extends Fragment {
 
-    private static final String TAG =TaskDetailFragment.class.toString() ;
+    private static final String TAG = TaskDetailFragment.class.toString();
     @BindView(R.id.rv_colors)
     RecyclerView rv_colors;
     @BindView(R.id.sw_isDone)
@@ -41,16 +41,20 @@ public class TaskDetailFragment extends Fragment {
     EditText et_name;
     @BindView(R.id.et_payment)
     EditText payment;
+    @BindView(R.id.til_name)
+    TextInputLayout tilName;
+    @BindView(R.id.til_payment)
+    TextInputLayout tilPayment;
     TaskColorAdapter colorAdapter;
     private String title;
     private Task task;
+
     public TaskDetailFragment() {
         // Required empty public constructor
         setHasOptionsMenu(true);
     }
 
     TaskFragmentListener taskFragmentListener;
-
 
 
     public void setTask(Task task) {
@@ -73,41 +77,41 @@ public class TaskDetailFragment extends Fragment {
     }
 
     private void setupUI(View view) {
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
 
         //set layout managet
-        rv_colors.setLayoutManager(new GridLayoutManager(this.getContext(),4));
+        rv_colors.setLayoutManager(new GridLayoutManager(this.getContext(), 4));
         // setAdapter
-        colorAdapter= new TaskColorAdapter();
+        colorAdapter = new TaskColorAdapter();
         rv_colors.setAdapter(colorAdapter);
         // add decoration
         rv_colors.addItemDecoration(new TaskColorDecor());
         //
 
         // set title
-        if(getActivity() instanceof  TaskActivity){
+        if (getActivity() instanceof TaskActivity) {
             ((TaskActivity) getActivity()).getSupportActionBar().setTitle(title);
         }
 
-        if (task != null){
+        if (task != null) {
             et_name.setText(task.getName());
-            payment.setText(String.format("%s",task.getPayment_per_hour()));
+            payment.setText(String.format("%s", task.getPayment_per_hour()));
             colorAdapter.setSelectedColor(task.getColor());
-            if (task.isDone())
-            {
+            if (task.isDone()) {
                 sw_isDone.setChecked(true);
-            }else{
+            } else {
                 sw_isDone.setChecked(false);
             }
         }
 
 
     }
-    private  void addListener(){
+
+    private void addListener() {
         payment.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if (payment.getText() == null){
+                if (payment.getText() == null) {
                     payment.setText("0");
                 }
             }
@@ -116,47 +120,77 @@ public class TaskDetailFragment extends Fragment {
     }
 
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            inflater.inflate(R.menu.menu_edit_task, menu);
+        inflater.inflate(R.menu.menu_edit_task, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_item)
-        {
+        if (item.getItemId() == R.id.menu_item) {
 
             //1 : get data from UI
             String taskName = et_name.getText().toString();
 
+
+            ////validate input
+            try {
+                validateTaskName(taskName);
+            } catch (Exception e) {
+                tilName.setError(e.getMessage());
+                return false;
+            }
+            try {
+                validatePayment(payment.getText().toString());
+            } catch (Exception e) {
+                tilPayment.setError(e.getMessage());
+                return false;
+            }
             float paymentPerHour = Float.parseFloat(payment.getText().toString());
             String color = colorAdapter.getSelectedColor();
             boolean isDone = sw_isDone.isChecked();
             Task newTask = new Task(taskName, color, paymentPerHour, isDone);
-            ////validate input
-            if(true){
-                Toast.makeText(this.getContext(), "Save", Toast.LENGTH_SHORT).show();
 
-                // 2 : Create new Task
+            Toast.makeText(this.getContext(), R.string.saved, Toast.LENGTH_SHORT).show();
 
-                if (task == null){
-                    // 3 : add to database
-                    DBContext.instance.addTask(newTask);
-                }else{
-                    newTask.setId(task.getId());
-                    DBContext.instance.editTask(newTask);
-                    Log.d(TAG, String.format("onOptionsItemSelected: %s", task.toString()));
-                    Log.d(TAG, String.format("onOptionsItemSelected: %s", newTask.toString()));
-                }
+            // 2 : Create new Task
+
+            if (task == null) {
+                // 3 : add to database
+                DBContext.instance.addTask(newTask);
+            } else {
+                newTask.setId(task.getId());
+                DBContext.instance.editTask(newTask);
+                Log.d(TAG, String.format("onOptionsItemSelected: %s", task.toString()));
+                Log.d(TAG, String.format("onOptionsItemSelected: %s", newTask.toString()));
             }
         }
+
         getActivity().onBackPressed();
 
         return false;
     }
 
+    public void validateTaskName(String taskName) throws Exception {
+        if (taskName.isEmpty()) {
+            throw new Exception("Enter task name");
+        }
+    }
 
+    public void validatePayment(String payment) throws Exception {
+
+        if (payment.isEmpty()) {
+            throw new Exception("Enter payment per hour");
+        }
+        try {
+            float paymentPerHour = Float.parseFloat(payment);
+
+        }catch (Exception e){
+            throw new Exception("Wrong format");
+        }
+
+
+    }
 
 
 }
