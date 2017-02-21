@@ -149,7 +149,7 @@ public class TaskDetailFragment extends Fragment {
             float paymentPerHour = Float.parseFloat(payment.getText().toString());
             String color = colorAdapter.getSelectedColor();
             boolean isDone = sw_isDone.isChecked();
-            Task newTask = new Task(taskName, color, paymentPerHour, isDone);
+            Task newTask = new Task(taskName, color, paymentPerHour, isDone, "");
 
             Toast.makeText(this.getContext(), R.string.saved, Toast.LENGTH_SHORT).show();
 

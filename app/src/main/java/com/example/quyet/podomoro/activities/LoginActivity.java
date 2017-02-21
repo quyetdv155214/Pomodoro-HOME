@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.quyet.podomoro.R;
+import com.example.quyet.podomoro.networks.NetContext;
 import com.example.quyet.podomoro.networks.jsonmodel.LoginBodyJson;
 import com.example.quyet.podomoro.networks.jsonmodel.LoginResponseJson;
 import com.example.quyet.podomoro.networks.jsonmodel.RegisterBodyJson;
@@ -62,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
     private Retrofit retrofit;
     private String username;
     private String password;
-    private String token;
+    private String accessToken;
 
 
     @Override
@@ -154,10 +155,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void sendRegister(String username, String password) {
         // create retrofit
-        retrofit = new Retrofit.Builder()
-                .baseUrl("http://a-task.herokuapp.com/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        retrofit = NetContext.instance.retrofit;
         // create service
         RegisterService registerService = retrofit.create(RegisterService.class);
 
@@ -195,7 +193,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void onLoginSuccess() {
         // put login
-        SharedPrefs.instance.put(new LoginCredentials(username, password, token));
+        SharedPrefs.instance.put(new LoginCredentials(username, password, accessToken));
         //
         Toast.makeText(this, Cons.LOGIN_SUCCESS_MESS, Toast.LENGTH_SHORT).show();
         //
@@ -204,10 +202,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void sendLogin(final String username, final String password) {
-        retrofit = new Retrofit.Builder()
-                .baseUrl("http://a-task.herokuapp.com/api/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+
+        retrofit = NetContext.instance.retrofit;
         // create service
         LoginService loginService = retrofit.create(LoginService.class);
         //data & format
@@ -229,8 +225,11 @@ public class LoginActivity extends AppCompatActivity {
                 LoginResponseJson loginResponseJson = response.body();
                 if (loginResponseJson != null) {
                     if (response.code() == 200) {
-                        token = loginResponseJson.getAccessToken();
-                        SharedPrefs.instance.put(new LoginCredentials(username, password, token));
+                        // put access token
+                        accessToken = loginResponseJson.getAccessToken();
+                        Log.d(TAG, String.format("onResponse: accessToken %s", accessToken));
+
+                        SharedPrefs.instance.put(new LoginCredentials(username, password, accessToken));
                         Toast.makeText(LoginActivity.this, Cons.LOGIN_SUCCESS_MESS, Toast.LENGTH_SHORT).show();
 
                         onLoginSuccess();
@@ -256,7 +255,9 @@ public class LoginActivity extends AppCompatActivity {
         if (s == null) {
             Log.d(TAG, "skipLoginIfPossible: instance is null ");
         } else if (SharedPrefs.instance.getLoginCredentials() != null) {
-            if (SharedPrefs.instance.getLoginCredentials().getAccessToken() != null) {
+            if ((accessToken = SharedPrefs.instance.getLoginCredentials().getAccessToken() )!= null) {
+                Log.d(TAG, String.format("accessToken %s", accessToken));
+
                 gotoTaskActivity();
             }
         }

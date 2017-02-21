@@ -25,11 +25,9 @@ public class DBContext {
     public List<Task> allTask() {
         if (tasks == null) {
             tasks = new ArrayList<>();
-            tasks.add(new Task("Task 1", "#4A148C",1, false));
+//            tasks.add(new Task("Task 1", "#4A148C",1, false));
 
         }
-
-
         return tasks;
     }
 
@@ -53,7 +51,7 @@ public class DBContext {
     }
 
     public void editTask(Task newTask){
-        long id = newTask.getId();
+        String id = newTask.getId();
         for (Task t: tasks
              ) {
             if (t.getId() == id)
