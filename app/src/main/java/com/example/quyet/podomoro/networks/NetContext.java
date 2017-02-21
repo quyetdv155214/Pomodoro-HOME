@@ -16,5 +16,4 @@ public class NetContext {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
-
 }

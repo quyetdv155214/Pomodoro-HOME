@@ -1,7 +1,5 @@
 package com.example.quyet.podomoro.databases.models;
 
-import java.util.Date;
-
 /**
  * Created by quyet on 2/8/2017.
  */
@@ -13,18 +11,21 @@ public class Task {
     private boolean isDone;
     private String id;
     private String local_id;
-    private Date due_date;
+    private String due_date;
 
 
-    public Task(String name, String color, double payment_per_hour, boolean isDone, String id) {
+    public Task(String name, String color, double payment_per_hour, boolean isDone,String id) {
         this.name = name;
         this.color = color;
         this.payment_per_hour = payment_per_hour;
         this.isDone = isDone;
         this.id = id;
+        this.due_date = null;
+        this.local_id  = null;
+
     }
 
-    public Task(String name, String color, double payment_per_hour, boolean isDone, String id, String local_id, Date due_date) {
+    public Task(String name, String color, double payment_per_hour, boolean isDone, String id, String local_id, String due_date) {
         this.name = name;
         this.color = color;
         this.payment_per_hour = payment_per_hour;
@@ -42,11 +43,11 @@ public class Task {
         this.local_id = local_id;
     }
 
-    public Date getDue_date() {
+    public String getDue_date() {
         return due_date;
     }
 
-    public void setDue_date(Date due_date) {
+    public void setDue_date(String due_date) {
         this.due_date = due_date;
     }
 
