@@ -4,7 +4,7 @@ package com.example.quyet.podomoro.ultil;
  * Created by quyet on 2/11/2017.
  */
 
-public class Cons {
+public class Constant {
     public static final int LENGTH_OF_USERNAME = 4;
     public static final int LENGTH_OF_PASSwOED = 4;
     public static final String USERNAME_REGEX = "[^_A-Za-z0-9]";
@@ -18,7 +18,6 @@ public class Cons {
     public static final String REGISTER_SUCCESS_MESS ="Registered";
     public static final String REGISTER_ACCOUNT_USED_MESS_LONG ="Register fail, username already used";
     public static final String REGISTER_ACCOUNT_USED_MESS_SHORT ="Username already used";
-    public static final String INTERNET_ERROR ="Weak or no internet";
-
-
+    public static final String INTERNET_ERROR ="Weak or no internet" ;
+    public static final String EXCEPTION_TASK_HAVE_NULL_LOCAL_ID = "Can't delete this task\nThis task have null local id";
 }

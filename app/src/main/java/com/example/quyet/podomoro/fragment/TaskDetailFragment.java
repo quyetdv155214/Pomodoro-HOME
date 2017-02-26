@@ -1,6 +1,9 @@
 package com.example.quyet.podomoro.fragment;
 
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -20,8 +23,10 @@ import android.widget.Toast;
 
 import com.example.quyet.podomoro.R;
 import com.example.quyet.podomoro.activities.TaskActivity;
+import com.example.quyet.podomoro.adapters.TaskAdapter;
 import com.example.quyet.podomoro.adapters.TaskColorAdapter;
 import com.example.quyet.podomoro.databases.DBContext;
+import com.example.quyet.podomoro.databases.TaskManager;
 import com.example.quyet.podomoro.databases.models.Task;
 import com.example.quyet.podomoro.decoration.TaskColorDecor;
 
@@ -50,11 +55,11 @@ public class TaskDetailFragment extends Fragment {
     private String title;
     private Task task;
 
+
     public TaskDetailFragment() {
         // Required empty public constructor
         setHasOptionsMenu(true);
     }
-
     TaskFragmentListener taskFragmentListener;
 
 
@@ -77,9 +82,9 @@ public class TaskDetailFragment extends Fragment {
         return view;
     }
 
+
     private void setupUI(View view) {
         ButterKnife.bind(this, view);
-
         //set layout managet
         rv_colors.setLayoutManager(new GridLayoutManager(this.getContext(), 4));
         // setAdapter
@@ -87,13 +92,10 @@ public class TaskDetailFragment extends Fragment {
         rv_colors.setAdapter(colorAdapter);
         // add decoration
         rv_colors.addItemDecoration(new TaskColorDecor());
-        //
-
         // set title
         if (getActivity() instanceof TaskActivity) {
             ((TaskActivity) getActivity()).getSupportActionBar().setTitle(title);
         }
-
         if (task != null) {
             et_name.setText(task.getName());
             payment.setText(String.format("%s", task.getPayment_per_hour()));
@@ -117,10 +119,7 @@ public class TaskDetailFragment extends Fragment {
                 }
             }
         });
-
     }
-
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_edit_task, menu);
@@ -130,14 +129,13 @@ public class TaskDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_item) {
             View view = this.getActivity().getCurrentFocus();
+            //
             if (view != null) {
-                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
             //1 : get data from UI
             String taskName = et_name.getText().toString();
-
-
             ////validate input
             try {
                 validateTaskName(taskName);
@@ -154,24 +152,54 @@ public class TaskDetailFragment extends Fragment {
             float paymentPerHour = Float.parseFloat(payment.getText().toString());
             String color = colorAdapter.getSelectedColor();
             boolean isDone = sw_isDone.isChecked();
-            Task newTask = new Task(taskName, color, paymentPerHour, isDone, "");
-
+            Log.d(TAG, String.format("onOptionsItemSelected: %s", isDone));
             Toast.makeText(this.getContext(), R.string.saved, Toast.LENGTH_SHORT).show();
-
             // 2 : Create new Task
+             Task newTask = new Task(taskName, color, paymentPerHour, isDone, "", "");
+
+
 
             if (task == null) {
                 // 3 : add to database
                 DBContext.instance.addTask(newTask);
+                TaskManager.instance.addNewTask(newTask);
+                getActivity().onBackPressed();
+
             } else {
+                final ProgressDialog myDialog = new ProgressDialog(this.getActivity());
+                myDialog.setMessage("Waitting...");
+                myDialog.setCancelable(false);
+                myDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        getActivity().onBackPressed();
+                    }
+                });
+                myDialog.show();
+
+                Task temp = newTask;
+                newTask.setLocal_id(task.getLocal_id());
                 newTask.setId(task.getId());
                 DBContext.instance.editTask(newTask);
-                Log.d(TAG, String.format("onOptionsItemSelected: %s", task.toString()));
-                Log.d(TAG, String.format("onOptionsItemSelected: %s", newTask.toString()));
+                TaskManager.instance.editTask(newTask);
+                TaskManager.instance.setEditTaskListener(new TaskManager.EditTaskListener() {
+                    @Override
+                    public void onEditTask(boolean ok) {
+                        if(ok){
+                            myDialog.dismiss();
+                            getActivity().onBackPressed();
+                        }
+
+
+                    }
+                });
+
             }
         }
 
-        getActivity().onBackPressed();
+//        taskFragmentListener.onChangeFragment(new TaskFragment(), false);
+
 
         return false;
     }
@@ -190,11 +218,9 @@ public class TaskDetailFragment extends Fragment {
         try {
             float paymentPerHour = Float.parseFloat(payment);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("Wrong format");
         }
-
-
     }
 
 

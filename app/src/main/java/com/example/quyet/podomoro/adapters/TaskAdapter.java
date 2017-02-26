@@ -26,9 +26,18 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     public interface TaskTimerClickListener {
         void onTimerClick(Task t);
     }
+    public interface TaskLongClickListener{
+        void onLongClick(Task task);
+    }
 
     private TaskItemClickListener taskItemClickListener;
     private TaskTimerClickListener taskTimerClickListener;
+    private TaskLongClickListener taskLongClickListener;
+
+
+    public void setTaskLongClickListener(TaskLongClickListener taskLongClickListener) {
+        this.taskLongClickListener = taskLongClickListener;
+    }
 
     public void setTaskItemClickListener(TaskItemClickListener taskItemClickListener) {
         this.taskItemClickListener = taskItemClickListener;
@@ -47,9 +56,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
                 parent,
                 false
         );
-
         // 2 : create View holder
         TaskViewHolder taskViewHolder = new TaskViewHolder(itemView);
+
         return taskViewHolder;
     }
 
@@ -63,7 +72,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: click image button");
-
                 taskTimerClickListener.onTimerClick(task);
             }
         });
@@ -74,7 +82,18 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
                 if (taskItemClickListener != null) {
                         taskItemClickListener.onItemClick(task);
                 }
-
+                notifyDataSetChanged();
+            }
+        });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (taskLongClickListener!= null)
+                {
+                    taskLongClickListener.onLongClick(task);
+                    Log.d(TAG, "onLongClick: long click");
+                }
+                return false;
             }
         });
 
