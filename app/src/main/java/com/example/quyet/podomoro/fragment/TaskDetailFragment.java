@@ -161,13 +161,14 @@ public class TaskDetailFragment extends Fragment {
 
             if (task == null) {
                 // 3 : add to database
-                DBContext.instance.addTask(newTask);
+//                DBContext.instance.addTask(newTask);
+                DBContext.instance.add(newTask);
                 TaskManager.instance.addNewTask(newTask);
                 getActivity().onBackPressed();
 
             } else {
                 final ProgressDialog myDialog = new ProgressDialog(this.getActivity());
-                myDialog.setMessage("Waitting...");
+                myDialog.setMessage("Saver to server...");
                 myDialog.setCancelable(false);
                 myDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -181,7 +182,7 @@ public class TaskDetailFragment extends Fragment {
                 Task temp = newTask;
                 newTask.setLocal_id(task.getLocal_id());
                 newTask.setId(task.getId());
-                DBContext.instance.editTask(newTask);
+                DBContext.instance.addOrUpdate(newTask);
                 TaskManager.instance.editTask(newTask);
                 TaskManager.instance.setEditTaskListener(new TaskManager.EditTaskListener() {
                     @Override
@@ -189,18 +190,16 @@ public class TaskDetailFragment extends Fragment {
                         if(ok){
                             myDialog.dismiss();
                             getActivity().onBackPressed();
+                        }else{
+                            myDialog.dismiss();
+                            Toast.makeText(getContext(), "Can't save to server", Toast.LENGTH_SHORT).show();
+                            getActivity().onBackPressed();
                         }
-
-
                     }
                 });
 
             }
         }
-
-//        taskFragmentListener.onChangeFragment(new TaskFragment(), false);
-
-
         return false;
     }
 

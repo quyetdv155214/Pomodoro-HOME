@@ -1,12 +1,19 @@
 package com.example.quyet.podomoro.databases;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.example.quyet.podomoro.databases.models.Color;
 import com.example.quyet.podomoro.databases.models.Task;
+import com.example.quyet.podomoro.databases.models.TempTask;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmModel;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 import static android.content.ContentValues.TAG;
 
@@ -16,21 +23,78 @@ import static android.content.ContentValues.TAG;
 
 public class DBContext {
 
-    public static final DBContext instance = new DBContext();
-    private List<Task> tasks;
 
-    private DBContext() {
-        tasks = new ArrayList<>();
+    public static DBContext instance;
+    private Realm realm;
+
+    public DBContext(Context context) {
+        Realm.init(context);
+        realm = Realm.getDefaultInstance();
     }
 
-    public List<Task> allTask() {
+    public DBContext() {
+    }
 
-        return tasks;
+    //    public void addTask(Task task) {
+//        realm.beginTransaction();
+//        realm.copyToRealm(task);
+//        realm.commitTransaction();
+//    }
+    public List<TempTask> getTemps() {
+        RealmResults<TempTask> temps = realm.where(TempTask.class).findAll();
+        return temps;
     }
 
     public List<Task> getTasks() {
-        return tasks;
+        RealmResults<Task> listTask = realm.where(Task.class).findAll();
+//        for (Task t :
+//                listTask) {
+//            Log.d(TAG, String.format("getTasks: %s", t.toString()));
+//        }
+
+        return listTask;
     }
+
+
+    public void deleteTask(Task task) {
+        realm.beginTransaction();
+        RealmResults<Task> delTask = realm.where(Task.class).equalTo("local_id", task.getLocal_id()).findAll();
+        if (delTask != null)
+            for (Task t :
+                    delTask) {
+                t.deleteFromRealm();
+            }
+        realm.commitTransaction();
+    }
+
+    public void getTempTask() {
+
+    }
+
+    public void deleteTempTask(TempTask tempTask) {
+        realm.beginTransaction();
+        RealmResults<TempTask> delTemps = realm.where(TempTask.class).equalTo("local_id", tempTask.getLocal_id()).findAll();
+        if (delTemps != null)
+            for (TempTask t :
+                    delTemps) {
+                t.deleteFromRealm();
+            }
+        realm.commitTransaction();
+    }
+
+    //
+    public <T> void addOrUpdate(T t) {
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate((RealmObject) t);
+        realm.commitTransaction();
+    }
+
+    public <T> void add(T t) {
+        realm.beginTransaction();
+        realm.copyToRealm((RealmObject) t);
+        realm.commitTransaction();
+    }
+
 
     public List<Color> allColor() {
         List<Color> colors = new ArrayList<>();
@@ -47,50 +111,4 @@ public class DBContext {
         return colors;
     }
 
-    public void editTask(Task newTask) {
-        String id = newTask.getId();
-        for (Task t : tasks
-                ) {
-            if (t.getId().equals(id)) {
-                t.setName(newTask.getName());
-                t.setColor(newTask.getColor());
-                t.setDone(newTask.isDone());
-                t.setPayment_per_hour(newTask.getPayment_per_hour());
-                t.setLocal_id(newTask.getLocal_id());
-                t.setDue_date(newTask.getDue_date());
-                Log.d(TAG, String.format("onOptionsItemSelected: %s ", t.toString()));
-                break;
-            }
-        }
-    }
-
-
-    public void addTask(Task newTask) {
-        tasks.add(newTask);
-    }
-
-    public boolean deleteTask(Task task) {
-        if (task.getLocal_id() == null)
-        {
-            Log.d(TAG, "deleteTask: this task have null local id");
-            return false;
-        }
-        for (Task t :
-                tasks) {
-            if (t.getLocal_id() != null )
-                if (t.getLocal_id().equals(task.getLocal_id())) {
-                    tasks.remove(t);
-                    return true;
-                }
-            else {
-                    Log.d(TAG, String.format("deleteTask: %s", "local id null"));
-                }
-        }
-
-        return false;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
-    }
 }

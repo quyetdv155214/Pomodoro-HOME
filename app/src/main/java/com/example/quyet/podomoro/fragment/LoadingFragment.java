@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.quyet.podomoro.R;
 import com.example.quyet.podomoro.databases.DBContext;
@@ -48,16 +49,16 @@ public class LoadingFragment extends Fragment {
         TaskManager.instance.setGetTasksListener(new TaskManager.GetTasksListener() {
             @Override
             public void onGetAllTask(boolean ok) {
-                Log.d(TAG, "onGetAllTask: ");
-//                List<Task> tasks = DBContext.instance.allTask();
-//                for (Task t :
-//                        tasks) {
-//                    Log.d(TAG, String.format("onGetAllTask: %s", t.toString()));
-//                }
-                TaskFragment taskFragment = new TaskFragment();
-                taskFragmentListener.onChangeFragment(taskFragment, false);
+                if(ok){
+
+                    TaskFragment taskFragment = new TaskFragment();
+                    taskFragmentListener.onChangeFragment(taskFragment, false);
+                }else{
+                    DBContext.instance.getTasks();
+                    TaskFragment taskFragment = new TaskFragment();
+                    taskFragmentListener.onChangeFragment(taskFragment, false);
+                }
             }
         });
     }
-
 }

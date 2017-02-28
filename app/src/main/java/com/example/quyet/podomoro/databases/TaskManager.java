@@ -1,8 +1,11 @@
 package com.example.quyet.podomoro.databases;
 
 import android.util.Log;
+import android.widget.Toast;
 
+import com.example.quyet.podomoro.activities.TaskActivity;
 import com.example.quyet.podomoro.databases.models.Task;
+import com.example.quyet.podomoro.databases.models.TempTask;
 import com.example.quyet.podomoro.networks.NetContext;
 import com.example.quyet.podomoro.networks.jsonmodel.DeleteResponseJSon;
 import com.example.quyet.podomoro.networks.jsonmodel.TaskResponseJson;
@@ -32,6 +35,7 @@ public class TaskManager {
         void onEditTask(boolean ok);
     }
 
+
     private EditTaskListener editTaskListener;
 
     public void setEditTaskListener(EditTaskListener editTaskListener) {
@@ -54,13 +58,12 @@ public class TaskManager {
         taskService.getTasks().enqueue(new Callback<List<TaskResponseJson>>() {
             @Override
             public void onResponse(Call<List<TaskResponseJson>> call, Response<List<TaskResponseJson>> response) {
-                List<Task> tasks = new ArrayList<>();
                 Log.d(TAG, "onResponse: get All Task" + response.code());
                 if (response.body() != null) {
                     for (TaskResponseJson t :
                             response.body()) {
 //                        if (t.getName()!= null)
-                        tasks.add(new Task(
+                        DBContext.instance.addOrUpdate(new Task(
                                 t.getName(),
                                 t.getColor(),
                                 t.getPayment_per_hour(),
@@ -70,11 +73,10 @@ public class TaskManager {
                                 t.getDue_date()
                         ));
                     }
-                    DBContext.instance.setTasks(tasks);
+//                    compareData(DBContext.instance.getTasks());
                     getTasksListener.onGetAllTask(true);
                 }
             }
-
             @Override
             public void onFailure(Call<List<TaskResponseJson>> call, Throwable t) {
                 Log.d(TAG, String.format("onFailure: get all task %s", t.getCause()));
@@ -84,7 +86,7 @@ public class TaskManager {
         return true;
     }
 
-    public void addNewTask(Task newTask) {
+    public void addNewTask(final Task newTask) {
         TaskResponseJson newTaskResponseJson = new TaskResponseJson(
                 newTask.getName(),
                 newTask.getColor(),
@@ -105,15 +107,15 @@ public class TaskManager {
             @Override
             public void onFailure(Call<TaskResponseJson> call, Throwable t) {
                 Log.d(TAG, String.format("onFailure: add new task%s", t.getCause().toString()));
-
+//                DBContext.instance.addOrUpdate(new TempTask(newTask.getLocal_id(), true));
             }
         });
 
     }
 
-    public void editTask(Task editedTask) {
+    public void editTask(final Task editedTask) {
         String localId = editedTask.getLocal_id();
-//        TaskService taskService = NetContext.instance.create(TaskService.class);
+
         TaskResponseJson editedTaskResponse = new TaskResponseJson(
                 editedTask.getName(),
                 editedTask.getColor(),
@@ -122,7 +124,6 @@ public class TaskManager {
                 editedTask.getId(),
                 editedTask.getDue_date()
         );
-//        Log.d(TAG, String.format("editTask: edit task localid %s ", localId));
         taskService.editTask(localId, editedTaskResponse).enqueue(new Callback<TaskResponseJson>() {
             @Override
             public void onResponse(Call<TaskResponseJson> call, Response<TaskResponseJson> response) {
@@ -138,25 +139,41 @@ public class TaskManager {
             public void onFailure(Call<TaskResponseJson> call, Throwable t) {
                 Log.d(TAG, "edit fail ; " + t.getCause());
                 editTaskListener.onEditTask(false);
-
+//                DBContext.instance.addOrUpdate(new TempTask(editedTask.getLocal_id(), true, false, false));
             }
         });
     }
-
-    public void deleteTask(Task taskDelete) {
+    public void deleteTask(final Task taskDelete) {
         String localID = taskDelete.getLocal_id();
         Log.d(TAG, "deleteTask: in function");
         taskService.deleteTask(localID).enqueue(new Callback<DeleteResponseJSon>() {
             @Override
             public void onResponse(Call<DeleteResponseJSon> call, Response<DeleteResponseJSon> response) {
-
                 Log.d(TAG, "onResponse: DeleteTask code " + response.code());
             }
-
             @Override
             public void onFailure(Call<DeleteResponseJSon> call, Throwable t) {
                 Log.d(TAG, String.format("onFailure: delete task%s", t.getCause()));
+//                DBContext.instance.addOrUpdate(new TempTask(taskDelete.getLocal_id(), false, true, false));
             }
         });
+    }
+    public void compareData(List<Task> taskList){
+        List<TempTask> temps = DBContext.instance.getTemps();
+        for (TempTask temp:
+             temps) {
+            deleteTask(new Task(temp.getLocal_id()));
+            DBContext.instance.deleteTask(new Task(temp.getLocal_id()));
+            DBContext.instance.deleteTempTask(temp);
+        }
+        for (Task task:
+             taskList) {
+            for (TempTask temp :
+                    temps) {
+                if (task.getLocal_id().equals(temp.getLocal_id())){
+
+                }
+            }
+        }
     }
 }

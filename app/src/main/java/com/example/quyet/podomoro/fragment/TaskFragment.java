@@ -38,6 +38,7 @@ public class TaskFragment extends Fragment {
     RecyclerView rvTask;
     private TaskAdapter taskAdapter;
     ProgressDialog myDialog;
+
     //    public static TaskFragment instance = new TaskFragment();
     public TaskFragment() {
         // Required empty public constructor
@@ -50,6 +51,7 @@ public class TaskFragment extends Fragment {
         super.onAttach(context);
         taskFragmentListener = (TaskFragmentListener) context;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class TaskFragment extends Fragment {
 
     private void setupUI(View view) {
         //
+        final DBContext dbContext = new DBContext(this.getContext());
         ButterKnife.bind(this, view);
         //
         taskAdapter = new TaskAdapter();
@@ -86,12 +89,14 @@ public class TaskFragment extends Fragment {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        DBContext.instance.deleteTask(task);
-                        if (task.getLocal_id() != null)
-                        TaskManager.instance.deleteTask(task);
-                        else{
+
+                        if (task.getLocal_id() != null) {
+                            TaskManager.instance.deleteTask(task);
+                            dbContext.deleteTask(task);
+                        } else {
                             Toast.makeText(getContext(), Constant.EXCEPTION_TASK_HAVE_NULL_LOCAL_ID, Toast.LENGTH_SHORT).show();
                         }
+
                         taskAdapter.notifyDataSetChanged();
 //                        Log.d(TAG, "onclick yes");
 //                        dialog.cancel();
@@ -109,8 +114,6 @@ public class TaskFragment extends Fragment {
             }
         });
     }
-
-
 
 
     public void addListener() {

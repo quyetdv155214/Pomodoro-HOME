@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.example.quyet.podomoro.R;
+import com.example.quyet.podomoro.activities.TaskActivity;
 import com.example.quyet.podomoro.adapters.viewHolders.TaskViewHolder;
 import com.example.quyet.podomoro.databases.DBContext;
 import com.example.quyet.podomoro.databases.models.Task;
@@ -18,7 +19,7 @@ import com.example.quyet.podomoro.databases.models.Task;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     private static final String TAG = TaskAdapter.class.toString();
-
+//    DBContext dbContext = new DBContext()
     public interface TaskItemClickListener {
         void onItemClick(Task task);
     }

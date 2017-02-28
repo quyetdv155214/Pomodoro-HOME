@@ -16,11 +16,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import com.example.quyet.podomoro.R;
+import com.example.quyet.podomoro.databases.DBContext;
 import com.example.quyet.podomoro.databases.TaskManager;
 import com.example.quyet.podomoro.fragment.LoadingFragment;
 import com.example.quyet.podomoro.fragment.TaskFragment;
 import com.example.quyet.podomoro.fragment.TaskFragmentListener;
 import butterknife.ButterKnife;
+import io.realm.internal.Context;
 
 public class TaskActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener , TaskFragmentListener
@@ -76,12 +78,17 @@ public class TaskActivity extends AppCompatActivity
         loadingFragment= new LoadingFragment();
          taskFragment = new TaskFragment();
         onChangeFragment(loadingFragment, false);
+        // todo:  khoi tao db context
+        DBContext.instance = new DBContext(this);
 
     }
     public static TaskFragment getTaskFragment(){
         return taskFragment;
     }
 
+    public static Context getContext(){
+        return getContext();
+    }
     public void setupUI(){
 //        TaskManager.instance.getTaskFromServer();
 

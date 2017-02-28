@@ -12,6 +12,8 @@ import com.example.quyet.podomoro.databases.DBContext;
 import com.example.quyet.podomoro.databases.models.Color;
 import com.example.quyet.podomoro.databases.models.Task;
 
+import java.util.List;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -20,6 +22,7 @@ import static android.content.ContentValues.TAG;
 
 public class TaskColorAdapter extends RecyclerView.Adapter<ColorTableViewHolder>{
     private int selectedPosition;
+    List<Color> color = new DBContext().allColor();
     @Override
     public ColorTableViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -38,7 +41,7 @@ public class TaskColorAdapter extends RecyclerView.Adapter<ColorTableViewHolder>
 
     @Override
     public void onBindViewHolder(ColorTableViewHolder holder, final int position) {
-        Color color = DBContext.instance.allColor().get(position);
+        Color color = this.color.get(position);
         holder.bind(color);
         if(selectedPosition == position){
             holder.setCheck(true);
@@ -62,7 +65,7 @@ public class TaskColorAdapter extends RecyclerView.Adapter<ColorTableViewHolder>
     @Override
     public int getItemCount() {
 
-        return DBContext.instance.allColor().size();
+        return this.color.size();
     }
     public void setSelectedColor(String color)
     {
