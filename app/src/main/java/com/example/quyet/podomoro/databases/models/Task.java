@@ -17,6 +17,7 @@ public class Task  extends RealmObject{
     private double payment_per_hour;
     private boolean isDone;
     private String id;
+
     private String due_date;
 
     public Task() {
@@ -42,10 +43,6 @@ public class Task  extends RealmObject{
         this.local_id = Utils.instance.getUUID();
     }
 
-    public Task(String local_id) {
-        this.local_id = local_id;
-    }
-
     public String getLocal_id() {
         return local_id;
     }
@@ -69,33 +66,46 @@ public class Task  extends RealmObject{
     public boolean isDone() {
         return isDone;
     }
+
     public void setDone(boolean done) {
         isDone = done;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public void setColor(String color) {
         this.color = color;
     }
+
     public String getColor() {
         return color;
     }
+
+
+
+
     public double getPayment_per_hour() {
         return payment_per_hour;
     }
+
     public void setPayment_per_hour(float payment_per_hour) {
         this.payment_per_hour = payment_per_hour;
     }
+
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
+
     @Override
     public String toString() {
         return "Task{" +

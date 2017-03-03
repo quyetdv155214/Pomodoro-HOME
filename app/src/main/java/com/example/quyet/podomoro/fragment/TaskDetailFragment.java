@@ -2,7 +2,6 @@ package com.example.quyet.podomoro.fragment;
 
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -23,12 +22,16 @@ import android.widget.Toast;
 
 import com.example.quyet.podomoro.R;
 import com.example.quyet.podomoro.activities.TaskActivity;
-import com.example.quyet.podomoro.adapters.TaskAdapter;
 import com.example.quyet.podomoro.adapters.TaskColorAdapter;
+import com.example.quyet.podomoro.busmodel.DataSetChangeEvent;
+import com.example.quyet.podomoro.busmodel.FailureNetworkEvent;
 import com.example.quyet.podomoro.databases.DBContext;
 import com.example.quyet.podomoro.databases.TaskManager;
 import com.example.quyet.podomoro.databases.models.Task;
 import com.example.quyet.podomoro.decoration.TaskColorDecor;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,14 +57,17 @@ public class TaskDetailFragment extends Fragment {
     TaskColorAdapter colorAdapter;
     private String title;
     private Task task;
-
+    private int mode = -1;
+    private Task newTask;
 
     public TaskDetailFragment() {
         // Required empty public constructor
         setHasOptionsMenu(true);
     }
-    TaskFragmentListener taskFragmentListener;
 
+    ProgressDialog myDialog;
+
+    EventBus bus = EventBus.getDefault();
 
     public void setTask(Task task) {
         this.task = task;
@@ -79,9 +85,15 @@ public class TaskDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_task_detail, container, false);
         setupUI(view);
         addListener();
+        bus.register(this);
         return view;
     }
 
+    @Override
+    public void onStop() {
+        bus.unregister(this);
+        super.onStop();
+    }
 
     private void setupUI(View view) {
         ButterKnife.bind(this, view);
@@ -106,6 +118,16 @@ public class TaskDetailFragment extends Fragment {
                 sw_isDone.setChecked(false);
             }
         }
+        myDialog = new ProgressDialog(this.getActivity());
+        myDialog.setMessage("Syncing...");
+        myDialog.setCancelable(false);
+        myDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                getActivity().onBackPressed();
+            }
+        });
 
 
     }
@@ -120,6 +142,7 @@ public class TaskDetailFragment extends Fragment {
             }
         });
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_edit_task, menu);
@@ -149,58 +172,71 @@ public class TaskDetailFragment extends Fragment {
                 tilPayment.setError(e.getMessage());
                 return false;
             }
-            float paymentPerHour = Float.parseFloat(payment.getText().toString());
+            double paymentPerHour = Float.parseFloat(payment.getText().toString());
             String color = colorAdapter.getSelectedColor();
             boolean isDone = sw_isDone.isChecked();
             Log.d(TAG, String.format("onOptionsItemSelected: %s", isDone));
-            Toast.makeText(this.getContext(), R.string.saved, Toast.LENGTH_SHORT).show();
             // 2 : Create new Task
-             Task newTask = new Task(taskName, color, paymentPerHour, isDone, "", "");
-
-
+            newTask = new Task(taskName, color, paymentPerHour, isDone, "", "");
 
             if (task == null) {
-                // 3 : add to database
-//                DBContext.instance.addTask(newTask);
-                DBContext.instance.add(newTask);
+                mode = 0;
                 TaskManager.instance.addNewTask(newTask);
-                getActivity().onBackPressed();
-
-            } else {
-                final ProgressDialog myDialog = new ProgressDialog(this.getActivity());
-                myDialog.setMessage("Saver to server...");
-                myDialog.setCancelable(false);
-                myDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        getActivity().onBackPressed();
-                    }
-                });
                 myDialog.show();
-
-                Task temp = newTask;
-                newTask.setLocal_id(task.getLocal_id());
-                newTask.setId(task.getId());
-                DBContext.instance.addOrUpdate(newTask);
+            } else {
+                mode = 1;
                 TaskManager.instance.editTask(newTask);
-                TaskManager.instance.setEditTaskListener(new TaskManager.EditTaskListener() {
-                    @Override
-                    public void onEditTask(boolean ok) {
-                        if(ok){
-                            myDialog.dismiss();
-                            getActivity().onBackPressed();
-                        }else{
-                            myDialog.dismiss();
-                            Toast.makeText(getContext(), "Can't save to server", Toast.LENGTH_SHORT).show();
-                            getActivity().onBackPressed();
-                        }
-                    }
-                });
-
+                myDialog.show();
             }
         }
         return false;
+    }
+
+    @Subscribe
+    public void OnDataSetChanged(DataSetChangeEvent dsce) {
+        if (dsce.isChanged()) {
+            switch (mode) {
+                case 0:
+                    DBContext.instance.add(newTask);
+                    Log.d(TAG, "OnDataSetChanged: 0");
+                    Toast.makeText(this.getContext(), R.string.saved, Toast.LENGTH_SHORT).show();
+                    break;
+                case 1:
+                    newTask.setLocal_id(task.getLocal_id());
+                    newTask.setId(task.getId());
+                    DBContext.instance.addOrUpdate(newTask);
+                    Log.d(TAG, "OnDataSetChanged: 1");
+                    Toast.makeText(this.getContext(), R.string.saved, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            myDialog.dismiss();
+            getActivity().onBackPressed();
+        }
+        else{
+            switch (mode) {
+                case 0:
+                    Log.d(TAG, "OnDataSetChanged: parse fail");
+                    Toast.makeText(this.getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                    break;
+                case 1:
+                    Log.d(TAG, "OnDataSetChanged: parse fail");
+
+                    Toast.makeText(this.getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            myDialog.dismiss();
+            getActivity().onBackPressed();
+
+        }
+    }
+
+    @Subscribe
+    public void OnFailureNetwork(FailureNetworkEvent fne) {
+        if (fne.isFailed()) {
+            Toast.makeText(getContext(), "Can't sync data", Toast.LENGTH_SHORT).show();
+            myDialog.dismiss();
+            getActivity().onBackPressed();
+        }
     }
 
     public void validateTaskName(String taskName) throws Exception {

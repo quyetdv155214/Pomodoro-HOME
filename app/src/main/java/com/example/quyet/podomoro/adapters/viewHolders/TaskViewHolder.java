@@ -17,6 +17,7 @@ import com.example.quyet.podomoro.databases.models.Task;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 import static android.content.ContentValues.TAG;
 
@@ -71,11 +72,14 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 if (task.isDone()) {
+                    Realm.getDefaultInstance().beginTransaction();
                     task.setDone(false);
+                    Realm.getDefaultInstance().commitTransaction();
                     iv_task_check.setVisibility(View.INVISIBLE);
                 } else {
+                    Realm.getDefaultInstance().beginTransaction();
                     task.setDone(true);
-
+                    Realm.getDefaultInstance().commitTransaction();
                     iv_task_check.setVisibility(View.VISIBLE);
                 }
             }

@@ -1,17 +1,18 @@
 package com.example.quyet.podomoro.databases;
 
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.quyet.podomoro.activities.TaskActivity;
+import com.example.quyet.podomoro.busmodel.DataSetChangeEvent;
+import com.example.quyet.podomoro.busmodel.FailureNetworkEvent;
+import com.example.quyet.podomoro.busmodel.GetDataSuccessEvent;
 import com.example.quyet.podomoro.databases.models.Task;
-import com.example.quyet.podomoro.databases.models.TempTask;
 import com.example.quyet.podomoro.networks.NetContext;
 import com.example.quyet.podomoro.networks.jsonmodel.DeleteResponseJSon;
 import com.example.quyet.podomoro.networks.jsonmodel.TaskResponseJson;
 import com.example.quyet.podomoro.networks.services.TaskService;
 
-import java.util.ArrayList;
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -26,28 +27,10 @@ import retrofit2.Response;
 public class TaskManager {
     public static final String TAG = "TaskManager";
     private TaskService taskService = NetContext.instance.create(TaskService.class);
-
-    public interface GetTasksListener {
-        void onGetAllTask(boolean ok);
-    }
-
-    public interface EditTaskListener {
-        void onEditTask(boolean ok);
-    }
-
-
-    private EditTaskListener editTaskListener;
-
-    public void setEditTaskListener(EditTaskListener editTaskListener) {
-        this.editTaskListener = editTaskListener;
-    }
-
     public static final TaskManager instance = new TaskManager();
-    private GetTasksListener getTasksListener;
+    private EventBus bus = EventBus.getDefault();
 
-    public void setGetTasksListener(GetTasksListener getTasksListener) {
-        this.getTasksListener = getTasksListener;
-    }
+
 
     private TaskManager() {
     }
@@ -73,14 +56,13 @@ public class TaskManager {
                                 t.getDue_date()
                         ));
                     }
-//                    compareData(DBContext.instance.getTasks());
-                    getTasksListener.onGetAllTask(true);
+                    bus.post(new GetDataSuccessEvent(true));
                 }
             }
             @Override
             public void onFailure(Call<List<TaskResponseJson>> call, Throwable t) {
                 Log.d(TAG, String.format("onFailure: get all task %s", t.getCause()));
-                getTasksListener.onGetAllTask(false);
+                bus.post(new FailureNetworkEvent(true));
             }
         });
         return true;
@@ -102,12 +84,13 @@ public class TaskManager {
             @Override
             public void onResponse(Call<TaskResponseJson> call, Response<TaskResponseJson> response) {
                 Log.d(TAG, String.format("addNewTask: %s %s", response.code(), response.body().toString()));
+                bus.post(new DataSetChangeEvent(true));
             }
 
             @Override
             public void onFailure(Call<TaskResponseJson> call, Throwable t) {
                 Log.d(TAG, String.format("onFailure: add new task%s", t.getCause().toString()));
-//                DBContext.instance.addOrUpdate(new TempTask(newTask.getLocal_id(), true));
+                bus.post(new FailureNetworkEvent(true));
             }
         });
 
@@ -129,17 +112,19 @@ public class TaskManager {
             public void onResponse(Call<TaskResponseJson> call, Response<TaskResponseJson> response) {
                 if (response.body() != null) {
                     Log.d(TAG, "onResponse : Edited task code" + response.code());
-                    editTaskListener.onEditTask(true);
+                    bus.post(new DataSetChangeEvent(true));
+
                 } else {
                     Log.d(TAG, "onResponse: edit fail ; code " + response.code());
+                    bus.post(new DataSetChangeEvent(false));
                 }
             }
 
             @Override
             public void onFailure(Call<TaskResponseJson> call, Throwable t) {
                 Log.d(TAG, "edit fail ; " + t.getCause());
-                editTaskListener.onEditTask(false);
-//                DBContext.instance.addOrUpdate(new TempTask(editedTask.getLocal_id(), true, false, false));
+                bus.post(new FailureNetworkEvent(true));
+
             }
         });
     }
@@ -150,30 +135,16 @@ public class TaskManager {
             @Override
             public void onResponse(Call<DeleteResponseJSon> call, Response<DeleteResponseJSon> response) {
                 Log.d(TAG, "onResponse: DeleteTask code " + response.code());
+                bus.post(new DataSetChangeEvent(true));
+
             }
             @Override
             public void onFailure(Call<DeleteResponseJSon> call, Throwable t) {
                 Log.d(TAG, String.format("onFailure: delete task%s", t.getCause()));
-//                DBContext.instance.addOrUpdate(new TempTask(taskDelete.getLocal_id(), false, true, false));
+                bus.post(new FailureNetworkEvent(true));
+
             }
         });
     }
-    public void compareData(List<Task> taskList){
-        List<TempTask> temps = DBContext.instance.getTemps();
-        for (TempTask temp:
-             temps) {
-            deleteTask(new Task(temp.getLocal_id()));
-            DBContext.instance.deleteTask(new Task(temp.getLocal_id()));
-            DBContext.instance.deleteTempTask(temp);
-        }
-        for (Task task:
-             taskList) {
-            for (TempTask temp :
-                    temps) {
-                if (task.getLocal_id().equals(temp.getLocal_id())){
 
-                }
-            }
-        }
-    }
 }
