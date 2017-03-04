@@ -11,16 +11,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.quyet.podomoro.R;
-import com.example.quyet.podomoro.busmodel.FailureNetworkEvent;
-import com.example.quyet.podomoro.busmodel.GetDataSuccessEvent;
+import com.example.quyet.podomoro.busEvent.FailureNetworkEvent;
+import com.example.quyet.podomoro.busEvent.GetDataSuccessEvent;
 import com.example.quyet.podomoro.databases.DBContext;
 import com.example.quyet.podomoro.databases.TaskManager;
-import com.example.quyet.podomoro.databases.models.Task;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,6 +63,9 @@ public class LoadingFragment extends Fragment {
             Log.d(TAG, "OnGetData: true");
             TaskFragment taskFragment = new TaskFragment();
             taskFragmentListener.onChangeFragment(taskFragment, false);
+        }else{
+            Log.d(TAG, "OnGetData: false");
+            Toast.makeText(this.getContext(), "cannot parse", Toast.LENGTH_SHORT).show();
         }
     }
     @Subscribe

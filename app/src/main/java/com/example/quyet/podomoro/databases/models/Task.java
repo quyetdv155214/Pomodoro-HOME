@@ -9,7 +9,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by quyet on 2/8/2017.
  */
 
-public class Task  extends RealmObject{
+public class Task extends RealmObject {
     @PrimaryKey
     private String local_id;
     private String name;
@@ -88,8 +88,6 @@ public class Task  extends RealmObject{
     }
 
 
-
-
     public double getPayment_per_hour() {
         return payment_per_hour;
     }
@@ -104,6 +102,10 @@ public class Task  extends RealmObject{
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void revertDone() {
+        isDone = !isDone;
     }
 
     @Override

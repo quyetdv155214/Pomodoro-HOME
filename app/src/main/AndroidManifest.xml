@@ -24,6 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".service.PomodoroService" android:exported="false">
+
+        </service>
         <activity android:name=".activities.SettingActivity" />
         <activity android:name=".activities.ColorActivity"></activity>
     </application>

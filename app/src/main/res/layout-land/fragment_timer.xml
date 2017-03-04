@@ -1,0 +1,44 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.quyet.podomoro.fragment.TimerFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.example.quyet.podomoro.decoration.LSquareRelativeLayout
+        android:id="@+id/lsl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.github.lzyzsd.circleprogress.DonutProgress
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            app:donut_progress="70"
+            android:rotation="270"
+            android:layout_margin="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.example.quyet.podomoro.decoration.LSquareRelativeLayout>
+    <RelativeLayout
+        android:layout_toEndOf="@id/lsl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:text="@string/start"
+            android:id="@+id/bt_start"
+            android:layout_margin="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
+</RelativeLayout>
+
+
+
+</FrameLayout>

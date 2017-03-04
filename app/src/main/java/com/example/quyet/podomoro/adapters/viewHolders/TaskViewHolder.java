@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.example.quyet.podomoro.R;
 import com.example.quyet.podomoro.activities.TaskActivity;
 import com.example.quyet.podomoro.adapters.TaskAdapter;
+import com.example.quyet.podomoro.databases.DBContext;
+import com.example.quyet.podomoro.databases.TaskManager;
 import com.example.quyet.podomoro.databases.models.Task;
 
 import butterknife.BindView;
@@ -71,17 +73,15 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
         v_task_color.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Task temp = task;
                 if (task.isDone()) {
-                    Realm.getDefaultInstance().beginTransaction();
-                    task.setDone(false);
-                    Realm.getDefaultInstance().commitTransaction();
                     iv_task_check.setVisibility(View.INVISIBLE);
                 } else {
-                    Realm.getDefaultInstance().beginTransaction();
-                    task.setDone(true);
-                    Realm.getDefaultInstance().commitTransaction();
                     iv_task_check.setVisibility(View.VISIBLE);
                 }
+                temp.revertDone();
+                TaskManager.instance.editTask(temp);
+                DBContext.instance.addOrUpdate(temp);
             }
         });
 
@@ -90,6 +90,4 @@ public class TaskViewHolder extends RecyclerView.ViewHolder {
     public ImageButton getButton() {
         return bt_item_task;
     }
-
-
 }

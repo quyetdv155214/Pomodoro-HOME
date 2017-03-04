@@ -26,6 +26,7 @@ public class TaskResponseJson {
     private String due_date;
     //
 
+
     public TaskResponseJson(String name, String color, double payment_per_hour, boolean isDone, String id, String local_id, String due_date) {
         this.name = name;
         this.color = color;

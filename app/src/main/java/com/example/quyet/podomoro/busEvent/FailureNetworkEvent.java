@@ -1,4 +1,4 @@
-package com.example.quyet.podomoro.busmodel;
+package com.example.quyet.podomoro.busEvent;
 
 /**
  * Created by quyet on 3/3/2017.

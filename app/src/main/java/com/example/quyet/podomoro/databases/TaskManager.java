@@ -2,9 +2,9 @@ package com.example.quyet.podomoro.databases;
 
 import android.util.Log;
 
-import com.example.quyet.podomoro.busmodel.DataSetChangeEvent;
-import com.example.quyet.podomoro.busmodel.FailureNetworkEvent;
-import com.example.quyet.podomoro.busmodel.GetDataSuccessEvent;
+import com.example.quyet.podomoro.busEvent.DataSetChangeEvent;
+import com.example.quyet.podomoro.busEvent.FailureNetworkEvent;
+import com.example.quyet.podomoro.busEvent.GetDataSuccessEvent;
 import com.example.quyet.podomoro.databases.models.Task;
 import com.example.quyet.podomoro.networks.NetContext;
 import com.example.quyet.podomoro.networks.jsonmodel.DeleteResponseJSon;
@@ -57,6 +57,9 @@ public class TaskManager {
                         ));
                     }
                     bus.post(new GetDataSuccessEvent(true));
+                }else{
+                    bus.post(new GetDataSuccessEvent(false));
+
                 }
             }
             @Override
@@ -105,6 +108,7 @@ public class TaskManager {
                 editedTask.getPayment_per_hour(),
                 editedTask.isDone(),
                 editedTask.getId(),
+                editedTask.getLocal_id(),
                 editedTask.getDue_date()
         );
         taskService.editTask(localId, editedTaskResponse).enqueue(new Callback<TaskResponseJson>() {
