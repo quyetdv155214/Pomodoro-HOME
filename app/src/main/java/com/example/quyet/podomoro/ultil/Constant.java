@@ -20,4 +20,6 @@ public class Constant {
     public static final String REGISTER_ACCOUNT_USED_MESS_SHORT ="Username already used";
     public static final String INTERNET_ERROR ="Weak or no internet" ;
     public static final String EXCEPTION_TASK_HAVE_NULL_LOCAL_ID = "Can't delete this task\nThis task have null local id";
+    public static final int TIME_POMODORO = 1500000 + 1000;
+//    public static final int TIME_POMODORO = 15000;
 }

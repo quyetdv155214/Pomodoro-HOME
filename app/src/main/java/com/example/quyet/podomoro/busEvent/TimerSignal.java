@@ -5,13 +5,13 @@ package com.example.quyet.podomoro.busEvent;
  */
 
 public class TimerSignal {
-    private long time;
+    private int time;
 
-    public TimerSignal(long time) {
+    public TimerSignal(int time) {
         this.time = time;
     }
 
-    public long getTime() {
+    public int getTime() {
         return time;
     }
 }

@@ -1,8 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.quyet.podomoro.fragment.TimerFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -10,41 +10,64 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <com.example.quyet.podomoro.decoration.PSquareRelativeLayout
             android:id="@+id/plsl"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <com.github.lzyzsd.circleprogress.DonutProgress
+                android:id="@+id/pg_timer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                app:donut_progress="70"
-                android:rotation="270"
                 android:layout_margin="50dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:rotation="270"
+                app:donut_progress="70" />
 
             <TextView
-                android:text="aihihi"
                 android:id="@+id/tv_time"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="60dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:padding="16dp"
+                android:text=""
+                android:textSize="20sp" />
         </com.example.quyet.podomoro.decoration.PSquareRelativeLayout>
 
         <RelativeLayout
-            android:layout_below="@id/plsl"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <Button
+            android:layout_height="match_parent"
+            android:layout_below="@id/plsl">
 
+            <Button
+                android:id="@+id/bt_pause"
+                android:text="@string/pause"
+                android:enabled="false"
+                android:layout_centerHorizontal="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:layout_alignBaseline="@id/bt_pause"
+                android:layout_toStartOf="@id/bt_pause"
                 android:id="@+id/bt_start"
-                android:text="@string/start"
-                android:layout_margin="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"/>
+                android:layout_margin="20dp"
+                android:text="@string/start" />
+
+            <Button
+                android:id="@+id/bt_stop"
+                android:enabled="false"
+                android:layout_alignBaseline="@id/bt_pause"
+                android:layout_toEndOf="@id/bt_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:text="@string/stop" />
         </RelativeLayout>
 
     </RelativeLayout>

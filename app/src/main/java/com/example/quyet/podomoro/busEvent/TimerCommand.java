@@ -6,5 +6,6 @@ package com.example.quyet.podomoro.busEvent;
 
 public enum TimerCommand {
     START_TIMER,
+    PAUSE_TIMER,
     STOP_TIMER
 }

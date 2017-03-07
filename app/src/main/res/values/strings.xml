@@ -33,4 +33,7 @@
     <string name="add_new_task">Add new task</string>
     <string name="loading">loading...</string>
     <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="pause">pause</string>
+    <string name="time_to_break">Break Time !</string>
 </resources>

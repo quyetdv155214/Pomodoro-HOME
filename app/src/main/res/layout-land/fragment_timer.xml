@@ -15,6 +15,7 @@
         android:layout_height="match_parent">
 
         <com.github.lzyzsd.circleprogress.DonutProgress
+            android:id="@+id/pg_timer"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             app:donut_progress="70"
@@ -22,6 +23,16 @@
             android:layout_margin="50dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+        <TextView
+            android:text=""
+            android:id="@+id/tv_time"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:padding="16dp"
+            android:textSize="20sp"
+            android:background="#FFFFFF"/>
 
     </com.example.quyet.podomoro.decoration.LSquareRelativeLayout>
     <RelativeLayout
