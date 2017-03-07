@@ -108,7 +108,6 @@ public class TaskManager {
                 editedTask.getPayment_per_hour(),
                 editedTask.isDone(),
                 editedTask.getId(),
-                editedTask.getLocal_id(),
                 editedTask.getDue_date()
         );
         taskService.editTask(localId, editedTaskResponse).enqueue(new Callback<TaskResponseJson>() {

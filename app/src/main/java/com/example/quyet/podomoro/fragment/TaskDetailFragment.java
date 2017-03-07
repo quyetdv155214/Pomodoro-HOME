@@ -185,7 +185,7 @@ public class TaskDetailFragment extends Fragment {
                 myDialog.show();
             } else {
                 mode = 1;
-                TaskManager.instance.editTask(newTask);
+                TaskManager.instance.editTask(task);
                 myDialog.show();
             }
         }
@@ -216,12 +216,11 @@ public class TaskDetailFragment extends Fragment {
             switch (mode) {
                 case 0:
                     Log.d(TAG, "OnDataSetChanged: parse fail");
-                    Toast.makeText(this.getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this.getContext(), "Fail to add", Toast.LENGTH_SHORT).show();
                     break;
                 case 1:
                     Log.d(TAG, "OnDataSetChanged: parse fail");
-
-                    Toast.makeText(this.getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this.getContext(), "Fail to edit", Toast.LENGTH_SHORT).show();
                     break;
             }
             myDialog.dismiss();
