@@ -47,6 +47,7 @@ public class TimerFragment extends Fragment {
     @BindView(R.id.pg_timer)
     DonutProgress pgTimer;
     private float timerPercent= 0f;
+    private int startTime =Constant.TIME_POMODORO-1000;
 
     public void setTitle(String title) {
         this.title = title;
@@ -78,7 +79,7 @@ public class TimerFragment extends Fragment {
         return view;
     }
     private void setUI() {
-        tvTime.setText(covertTime(new TimerSignal(Constant.TIME_POMODORO)));
+        tvTime.setText(covertTime(new TimerSignal(startTime)));
         pgTimer.setText("");
         pgTimer.setProgress(timerPercent);
 
